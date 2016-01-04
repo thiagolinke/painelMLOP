@@ -1,0 +1,46 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+	<script type="text/javascript" src="Scripts/Pages/team.js?avoidCache=may26"></script>
+</head>
+<body>
+
+	<div class="panel-group" role="tablist" aria-multiselectable="true">
+
+		<div class="panel panel-default">
+			<div class="panel-heading" role="tab">
+				<h4 class="panel-title">
+					<a role="button" data-toggle="collapse" data-parent="#accordion" href="#meuTime" aria-expanded="false">Informações</a>
+				</h4>
+			</div>
+			<div id="meuTime" class="panel-body panel-collapse collapse" role="tabpanel"></div>
+		</div>
+
+		<div class="panel panel-default">
+			<div class="panel-heading" role="tab">
+				<h4 class="panel-title">
+					<a role="button" data-toggle="collapse" data-parent="#accordion" href="#meuElenco" aria-expanded="false">Elenco</a>
+				</h4>
+			</div>
+			<div id="meuElenco" class="panel-body panel-collapse collapse" role="tabpanel"></div>
+		</div>
+
+		<div class="panel panel-default">
+			<div class="panel-heading" role="tab" id="headingTwo">
+				<h4 class="panel-title">
+					<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false">Jogos</a>
+				</h4>
+			</div>
+			<div id="meusJogos" class="panel-body panel-collapse collapse" role="tabpanel"></div>
+		</div>
+
+	</div>
+
+</body>
+</html>
+
+<script language="javascript" type="text/javascript">
+
+	document.teamFunction = new Team();
+
+</script>
