@@ -67,7 +67,7 @@ Login.prototype.initiate = function (){
 
 	var v_body = $(".body-login")[0];	
 	//create ajax object to perform requests
-	this.__ajaxhandler = new LoginAjaxHandler(this);
+	this.__ajaxhandler = new AjaxHandler(this);
 
 	this.__divContainer = $(".login-wrapper")[0];
 	this.__divWrapContent = ELEMENT_FACTORY.createElement("div",{ __parentJS: this, onkeypress: this.onKeyPressAction,role:"form"},{});
@@ -101,7 +101,7 @@ Login.prototype.initiate = function (){
  */
 Login.prototype.__createLogo = function (){
 
-	var v_imageLogo = ELEMENT_FACTORY.createElement("img", { src: "images/new_interface/logos/logo-remopt-login.png" },{}) 
+    var v_imageLogo = ELEMENT_FACTORY.createElement("img", { className: "img-responsive center-block", src: "images/COP.jpg" }, {})
 	this.__divLogo = ELEMENT_FACTORY.createElement("div", {className: "wrap-logo-login"},{})
 
  	this.__divLogo.appendChild(v_imageLogo);
@@ -412,12 +412,12 @@ Login.prototype.__createExpiredPasswordContent = function (){
  * Do "is some user logged" request.
  */
 Login.prototype.isThereSomeUserLoggedRequest = function (){
-	var v_url = "doLogin.ashx";	
+	var v_url = "login.ashx";	
 	var v_data= {};
 
 	v_data.action = "isThereSomeUserLogged";	
 
-	this.__ajaxhandler.doGenericJsonAjaxRequest(v_url, v_data);
+	this.__ajaxhandler.doJsonAjaxRequest(v_url, v_data);
 
 };
 
@@ -435,7 +435,7 @@ Login.prototype.isThereSomeUserLoggedCallBack = function (p_data){
  * Do login request.
  */
 Login.prototype.loginRequest = function (){
-	var v_url = "doLogin.ashx";	
+	var v_url = "login.ashx";	
 	var v_data= {};
 
 	v_data.action = "login";
@@ -444,7 +444,7 @@ Login.prototype.loginRequest = function (){
 	v_data.rememberMe = this.__rememberMeInput.checked;
 
 
-	this.__ajaxhandler.doGenericJsonAjaxRequest(v_url, v_data);
+	this.__ajaxhandler.doJsonAjaxRequest(v_url, v_data);
 
 };
 
@@ -472,7 +472,7 @@ Login.prototype.loginRequestCallBack = function (p_data){
 Login.prototype.expiredPasswordRequest = function (){
 
 	var v_validateErrorMessage = this.__validateExpiredPasswordFields();
-	var v_url = "doLogin.ashx";
+	var v_url = "login.ashx";
 	var v_data= {};
 
 	if (v_validateErrorMessage != ""){
@@ -486,7 +486,7 @@ Login.prototype.expiredPasswordRequest = function (){
 	v_data.pNew1 = encriptPassword(v_data.u, this.__newPasswordInput1.value);
 	v_data.pNew2 = encriptPassword(v_data.u, this.__newPasswordInput2.value);
 
-	this.__ajaxhandler.doGenericJsonAjaxRequest(v_url, v_data);
+	this.__ajaxhandler.doJsonAjaxRequest(v_url, v_data);
 };
 
 /**
@@ -511,7 +511,7 @@ Login.prototype.expiredPasswordCallBack = function (p_data){
  * @return {[type]} [description]
  */
 Login.prototype.forgotPasswordRequest = function (){
-	var v_url = "doLogin.ashx";
+	var v_url = "login.ashx";
 	var v_data= {};
 
 	v_data.action = "forgotPassword";
@@ -521,7 +521,7 @@ Login.prototype.forgotPasswordRequest = function (){
 		this.printErrorMessage(" Please insert your username before you request your password. ");
 	}
 	else{
-		this.__ajaxhandler.doGenericJsonAjaxRequest(v_url, v_data);	
+		this.__ajaxhandler.doJsonAjaxRequest(v_url, v_data);	
 	}	
 
 };
@@ -615,5 +615,13 @@ Login.prototype.onKeyPressAction = function (e){
 		this.__parentJS.onEnterPressAction();	
 	}
 	
+
+};
+
+Login.prototype.showLoading = function () {
+
+};
+
+Login.prototype.hideLoading = function () {
 
 };

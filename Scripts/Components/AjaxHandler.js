@@ -101,38 +101,3 @@ AjaxHandler.prototype.doJsonAjaxRequest = function(p_url, p_formData, p_loadingO
 	}
 
 };
-
-AjaxHandler.prototype.showLoadingImages = function()
-{
-	//this = AjaxHandler object
-	//Checks if the AjaxHandler object was created with this.__parent set to a SlotPanel object
-	if(this.__parent)
-	{
-		//this.__parent is defined
-		if(this.__parent.showLoadingImageOnSlot)
-		{
-			//And it is a SlotPanel object
-			//So let's call the method to show the loading image
-			this.__parent.showLoadingImageOnSlot();
-			this.__parent.__parent.checkLoadingImage();
-		}
-	}
-};
-
-AjaxHandler.prototype.hideLoadingImages = function()
-{ 
-	//this = XMLHttpRequest object
-	if(this.__netchartFunction)
-	{
-		if(this.__netchartFunction.__parentSlot)
-		{
-			this.__netchartFunction.__parentSlot.hideLoadingImageOnSlot();
-			this.__netchartFunction.__parentSlot.__parent.checkLoadingImage();
-		}
-		else if(this.__netchartFunction.parentSlot)
-		{
-			this.__netchartFunction.parentSlot.hideLoadingImageOnSlot();
-			this.__netchartFunction.parentSlot.__parent.checkLoadingImage();
-		}
-	}
-};
