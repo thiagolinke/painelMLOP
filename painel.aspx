@@ -1,11 +1,12 @@
-﻿<%@ Page Language="VB" EnableSessionState="true" ValidateRequest="false" %>
+﻿<%@ Page Language="VB" AutoEventWireup="false" CodeFile="painel.aspx.vb" Inherits="painel" %>
+
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-<head runat="server">
+<head id="Head1" runat="server">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>Painel de Controle MLOP</title>
+	<title>Painel de Controle MLOP</title>
 
 	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
