@@ -924,20 +924,6 @@ Public Class Users
 		Return v_manager
 	End Function
 
-	''' <summary>
-	''' Querys the user database in order to get the user_role of a given user.
-	''' </summary>
-	''' <param name="username">The username whose user_role will be queried</param>
-	''' <returns>
-	''' Return a string with the user_role of the given user
-	''' </returns>
-	''' <remarks>
-	''' Modified by Marcelo - 2010-April-09 - Mantis Issue 0000439
-	''' </remarks>
-	Shared Function getUserRole(ByVal username As String) As String
-		getUserRole = HttpContext.Current.Application("userRole")
-	End Function
-
 	Public Shared Function getUsersNames(Optional p_includeRemoptUsers As Boolean = False) As List(Of String)
 		Dim v_command As New OdbcCommand()
 		Dim v_users As New List(Of String)
@@ -961,48 +947,6 @@ Public Class Users
 		End Using
 
 		Return v_users
-	End Function
-
-	''' <summary>
-	''' Get user chart dimension from cookie. If CHART_WIDTH=0 and CHART_HEIGHT=0 on cookie, function return Nothing
-	''' </summary>
-	''' <returns>Dictionary<></returns>
-	''' <remarks>
-	''' Luiz Consani - Issue 1616 - This method was created to return the value that was set by the user in AccountPreferences 
-	''' for height and width custon Charts were passed to the XML-generation graphics.
-	''' </remarks>
-	Shared Function getUserChartDimension() As Dictionary(Of String, Integer)
-		Try
-			Dim v_width As String
-			Dim v_heigth As String
-
-			If (IsNothing(HttpContext.Current.Request.Cookies.Item("CHART_WIDTH"))) Then
-				v_width = HttpContext.Current.Request("CHART_WIDTH").ToString
-			Else
-				v_width = HttpContext.Current.Request.Cookies.Item("CHART_WIDTH").Value.ToString()
-			End If
-
-			If (IsNothing(HttpContext.Current.Request.Cookies.Item("CHART_HEIGHT"))) Then
-				v_heigth = HttpContext.Current.Request("CHART_HEIGHT").ToString
-			Else
-				v_heigth = HttpContext.Current.Request.Cookies.Item("CHART_HEIGHT").Value.ToString()
-			End If
-
-
-			If Integer.Parse(v_heigth) = 0 And Integer.Parse(v_heigth) = 0 Then
-				Return Nothing
-			Else
-				Dim dic As New Dictionary(Of String, Integer)
-
-				dic.Add("width", Integer.Parse(v_width))
-				dic.Add("height", Integer.Parse(v_heigth))
-				Return dic
-			End If
-
-		Catch ex As Exception
-			Return Nothing
-		End Try
-
 	End Function
 
 	Public Shared Function getLoginCookies(ByVal p_userName As String, ByVal p_userTableCommand As OdbcCommand) As Hashtable

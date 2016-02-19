@@ -138,16 +138,11 @@ Public Class Login
 		Dim v_cookies As Hashtable
 		Dim v_executableCode As String = ""
 		Dim v_errorMessage As String
-		Dim v_expDateColumn As String
 		Dim qrySELECT As String
 
 		'Fidelis when refactoring: some old functions neeed to use old to connect with database (without ConnectionManager class), so we need
 		'to be sure that command has an connection
 		m_config.m_command.Connection = m_config.m_connectionManager.connection
-
-		'We'll use LDAP autentication only at TIM italy server itself. If SendErrorMail is false 
-		'it's probably because we are running it from a local machine
-		Dim v_ldapAutentication As Boolean = False
 
 		v_hashToReturn.Add("data", v_hashData)
 		v_hashToReturn.Add("executableCodeArray", v_executableCodeArray)
@@ -162,14 +157,12 @@ Public Class Login
 		'AccountPreferences.CreateFieldUseExcelOutputIfNonExistent(m_config.m_command)	' TODO: i dont know why this
 
 		'validade account: check if it is blocked
-		v_errorMessage = Me.accountIsBlocked()
-		If (v_errorMessage <> "") Then
-			v_executableCode = "this.contextObject.printErrorMessage('" & v_errorMessage & "');"
-			v_executableCodeArray.Add(v_executableCode)
-			Return v_hashToReturn
-		End If
-
-
+		'v_errorMessage = Me.accountIsBlocked()
+		'If (v_errorMessage <> "") Then
+		'v_executableCode = "this.contextObject.printErrorMessage('" & v_errorMessage & "');"
+		'v_executableCodeArray.Add(v_executableCode)
+		'Return v_hashToReturn
+		'End If
 
 		Dim innerHTML As String = ""
 		Dim innerJavaScript As String = ""
@@ -184,25 +177,9 @@ Public Class Login
 
 		Dim v_autenticate As String = "AND u.password=sha('" & m_config.m_password.Replace("'", "\'") & "');"
 
-		'We'll use LDAP autentication only at TIM italy server itself. If SendErrorMail is false 
-		'it's probably because we are running it from a local machine
-		If HttpContext.Current.Application("useLDAPLogin") Then
-			'We can have special users that won't use LDAP autentication, they will use the normall one instead
-			If HttpContext.Current.Application("LDAPExceptions").Contains(m_config.m_username.ToLower) Then
-				v_ldapAutentication = False
-			Else
-				v_ldapAutentication = True
-				v_autenticate = ""
-			End If
-
-			v_expDateColumn = "user_expiration_date"
-		Else
-			v_expDateColumn = "password_expiration_date"
-		End If
-
 		qrySELECT = _
 		"SELECT u.fullname, " & _
-		"u." & v_expDateColumn & ",u.last_login_time " & _
+		"u.last_login_time " & _
 		"FROM " & m_config.m_userDB & ".users AS u " & _
 		"WHERE u.username='" & m_config.m_username & "' " & v_autenticate
 
@@ -210,25 +187,6 @@ Public Class Login
 		v_dataReader = m_config.m_connectionManager.executeReader(m_config.m_command)
 
 		If v_dataReader.Read() Then	'user was found, so validate ldap and get some information
-
-			'validating expired password
-			If Not IsDBNull(v_dataReader(v_expDateColumn)) AndAlso _
-				CDate(v_dataReader(v_expDateColumn)) < Date.Today Then
-
-				If (v_ldapAutentication) Then	'show italian message to user instead request new one password, only for italy project
-					v_errorMessage = "Account sospeso da un Gestione Gli Utenti."
-					v_executableCode = "this.contextObject.printErrorMessage('" & v_errorMessage & "');"
-					v_executableCodeArray.Add(v_executableCode)
-				Else ' all other projects
-					v_expiredPassword = True
-					v_hashData.Add("expiredPassword", v_expiredPassword)
-					v_executableCode = "this.contextObject.loginRequestCallBack(data);" & Chr(10)
-					v_executableCodeArray.Add(v_executableCode)
-				End If
-
-				Return v_hashToReturn
-
-			End If
 
 			'validating full name
 			If Not IsDBNull(v_dataReader("fullname")) Then
@@ -246,19 +204,18 @@ Public Class Login
 			Me.updatePostSuccessLoginAttempt()
 
 		Else 'user wasn't found in DB
-			v_errorMessage = " Username and password entered are incorrect. Please note that after you miss your password 4 times your account will be blocked. "
+			v_errorMessage = " Usuário e senha incorretos. Se você errar a senha 4 vezes, seu usuário será bloqueado. "
 			v_executableCode = "this.contextObject.printErrorMessage('" & v_errorMessage & "');"
 			v_executableCodeArray.Add(v_executableCode)
 
 			v_dataReader.Close()
-			Me.updatePostFailLoginAttempt()
+			'Me.updatePostFailLoginAttempt()
 
 			Return v_hashToReturn
 		End If
 
 		' include in executable code array function to set cookies
-		'v_cookies = UsersManage.getLoginCookies(m_config.m_username, m_config.m_command)
-
+		v_cookies = Users.getLoginCookies(m_config.m_username, m_config.m_command)
 
 		v_executableCode &= "function myInnerHTMLJavaScript()" & Chr(10)
 		v_executableCode &= "{" & Chr(10)
@@ -277,29 +234,7 @@ Public Class Login
 			v_executableCode &= "SetCookie ('STAY_SIGNED','False',neverExpDate);" & Chr(10)
 		End If
 
-		If v_ldapAutentication Then
-			v_executableCode &= "expdate = undefined;"
-		End If
-
 		'----------------------------- Server code only ------------------------------
-		'Thiago Fides on 2013-05-09: This cookie is here to be used by the news.
-		'Dim v_connection As New OdbcConnection(HttpContext.Current.Application("connectionString"))
-		'v_connection.Open()
-
-		'Dim v_news As New NewsManager(v_connection.CreateCommand)
-		'Dim v_showNews As Boolean = v_news.showNews(v_lastLoginTime, m_config.m_username)
-
-		'v_executableCode &= "SetCookie('DISPLAY_NEWS','" & v_showNews & "',expdate);" & Chr(10)
-		'v_connection.Close()
-
-		'Fidelis on 2015-09-10: check if there is a questionnaire availble and set respective news
-		Dim v_questionnaireTable As String
-		If (Not HttpContext.Current.Application("questionnaireTable") Is Nothing) Then
-			v_questionnaireTable = HttpContext.Current.Application("questionnaireTable")
-		Else
-			v_questionnaireTable = ""
-		End If
-
 		For Each t_entry As DictionaryEntry In v_cookies
 			v_executableCode &= "SetCookie('" & t_entry.Key & "','" & t_entry.Value & "',expdate);" & Chr(10)
 		Next
@@ -313,7 +248,7 @@ Public Class Login
 		v_executableCodeArray.Add(v_executableCode)
 		v_executableCode = "myInnerHTMLJavaScript();" & Chr(10)
 		v_executableCodeArray.Add(v_executableCode)
-		v_executableCode = "this.contextObject.printSuccessMessage('" & userFullName & " logged into " & HttpContext.Current.Application("userRole") & ".');"
+		v_executableCode = "this.contextObject.printSuccessMessage('" & userFullName & " logged into MLOP.');"
 		v_executableCodeArray.Add(v_executableCode)
 		v_executableCode = "this.contextObject.loginRequestCallBack(data);" & Chr(10)
 		v_executableCodeArray.Add(v_executableCode)
@@ -459,7 +394,7 @@ Public Class LoginConfiguration
 	Public Function runFromInterface(ByVal p_context As Web.HttpRequest) As Hashtable
 
 		Dim v_model As Hashtable = New Hashtable
-		m_userDB = HttpContext.Current.Application("userDB")
+		m_userDB = HttpContext.Current.Application("DBName")
 		m_command = New OdbcCommand()
 		m_connectionManager = New ConnectionManager()
 
@@ -492,7 +427,7 @@ Public Class LoginConfiguration
 		End If
 
 		If (Not p_context("p") Is Nothing) Then
-			'Me.m_password = DecriptString(Me.m_username, p_context("p"))
+			Me.m_password = DecriptString(Me.m_username, p_context("p"))
 		End If
 
 		If (Not p_context("rememberMe") Is Nothing) Then
@@ -509,15 +444,15 @@ Public Class LoginConfiguration
 		End If
 
 		If (Not p_context("pOld") Is Nothing) Then
-			'Me.m_password = DecriptString(Me.m_username, p_context("pOld"))
+			Me.m_password = DecriptString(Me.m_username, p_context("pOld"))
 		End If
 
 		If (Not p_context("pNew1") Is Nothing) Then
-			'Me.m_newPassword1 = DecriptString(Me.m_username, p_context("pNew1"))
+			Me.m_newPassword1 = DecriptString(Me.m_username, p_context("pNew1"))
 		End If
 
 		If (Not p_context("pNew2") Is Nothing) Then
-			'Me.m_newPassword2 = DecriptString(Me.m_username, p_context("pNew2"))
+			Me.m_newPassword2 = DecriptString(Me.m_username, p_context("pNew2"))
 		End If
 
 		If (Not p_context("rememberMe") Is Nothing) Then

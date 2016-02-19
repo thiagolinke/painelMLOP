@@ -43,9 +43,9 @@ function Login(){
  * @type {Object}
  */
 Login.MESSAGE_CLASSES = Object.freeze({
-	error : "alert alert-danger fade in widget-inner",
-	warning:"alert alert-success fade in widget-inner",
-	success:"alert alert-success fade in widget-inner",
+	error : "alert alert-danger fade in",
+	warning:"alert alert-warning fade in",
+	success:"alert alert-success fade in",
 });
 
 /**
@@ -53,9 +53,9 @@ Login.MESSAGE_CLASSES = Object.freeze({
  * @type {Object}
  */
 Login.ICON_CLASSES = Object.freeze({
-	error : "fa fa-warning",
-	warning:"fa fa-warning",
-	success:"fa fa-check",
+	error: "glyphicon glyphicon-exclamation-sign",
+	warning: "glyphicon glyphicon-info-sign",
+	success: "glyphicon glyphicon-ok",
 });
 
 
@@ -65,12 +65,13 @@ Login.ICON_CLASSES = Object.freeze({
  */
 Login.prototype.initiate = function (){
 
-	var v_body = $(".body-login")[0];	
+	var v_body = $("#body-login")[0];	
 	//create ajax object to perform requests
 	this.__ajaxhandler = new AjaxHandler(this);
 
-	this.__divContainer = $(".login-wrapper")[0];
-	this.__divWrapContent = ELEMENT_FACTORY.createElement("div",{ __parentJS: this, onkeypress: this.onKeyPressAction,role:"form"},{});
+	this.__divContainer = $("#div_login_container")[0];
+
+	this.__divWrapContent = ELEMENT_FACTORY.createElement("div",{className:"col-md-6 col-md-offset-3", __parentJS: this, onkeypress: this.onKeyPressAction,role:"form"},{});
 	this.__createLogo();
 	this.__createMessageContent();
 	this.__createLoginContent();
@@ -79,11 +80,10 @@ Login.prototype.initiate = function (){
 
 	//append HTML DOM objects inside __divContainer	
 	this.__divWrapContent.appendChild(this.__divLoginContent);
+	this.__divWrapContent.appendChild(this.__divForgotPassword);
+	this.__divWrapContent.appendChild(this.__divWrapMessage);
 	this.__divContainer.appendChild(this.__divLogo);	
 	this.__divContainer.appendChild(this.__divWrapContent);
-	this.__divContainer.appendChild(this.__divForgotPassword);
-	this.__divContainer.appendChild(this.__divWrapMessage);
-
 	this.__showForgotPasswordButton = true;
 	this.__doLoginRequestOnEnterPressed = true;
 
@@ -91,7 +91,6 @@ Login.prototype.initiate = function (){
 	this.__rememberMeInput.checked = GetCookie("STAY_SIGNED") == "True";
 	if (GetCookie("USERNAME") != ""){
 		this.isThereSomeUserLoggedRequest();
-
 	}
 
 };
@@ -101,8 +100,8 @@ Login.prototype.initiate = function (){
  */
 Login.prototype.__createLogo = function (){
 
-    var v_imageLogo = ELEMENT_FACTORY.createElement("img", { className: "img-responsive center-block", src: "images/COP.jpg" }, {})
-	this.__divLogo = ELEMENT_FACTORY.createElement("div", {className: "wrap-logo-login"},{})
+	var v_imageLogo = ELEMENT_FACTORY.createElement("img", { className: "img-responsive img-circle center-block", src: "images/COP.jpg" });
+	this.__divLogo = ELEMENT_FACTORY.createElement("div", { className: "panel-body" });
 
  	this.__divLogo.appendChild(v_imageLogo);
 
@@ -120,28 +119,28 @@ Login.prototype.__createLoginContent = function (){
 	//inputs and labels inside v_divPanelBody
 	var v_labelUsername, v_iconUsername, v_labelPassword, v_iconPassword, v_divRememberMe, v_labelRememberMe, v_textRememberMe
 	//create panel heading
-	v_divPanelHeading = ELEMENT_FACTORY.createElement("div",{className:"panel-heading"},{});
-	v_divPanelHeading.innerHTML = '<h6 class="panel-title"><i class="fa fa-user"></i> User login</h6>';
+	v_divPanelHeading = ELEMENT_FACTORY.createElement("div",{className:"panel-heading"});
+	v_divPanelHeading.innerHTML = '<h6 class="panel-title"><i class="glyphicon glyphicon-user"></i> Login de Usuário </h6>';
 
 	//create panel body
 	v_divPanelBody = ELEMENT_FACTORY.createElement("div",{className:"panel-body"},{});
-	v_divWrapContentPanelBody = ELEMENT_FACTORY.createElement("div",{className:"wrap-login"},{});
+	v_divWrapContentPanelBody = ELEMENT_FACTORY.createElement("div");
 	
 	//div elements in panel body
-	v_divWrapUsername = ELEMENT_FACTORY.createElement("div",{className:"form-group has-feedback"},{});
-	v_divWrapPassword = ELEMENT_FACTORY.createElement("div",{className:"form-group has-feedback"},{});
-	v_divWrapActions = ELEMENT_FACTORY.createElement("div",{className:"row form-actions"},{});
-	v_divWrapRememberMe = ELEMENT_FACTORY.createElement("div",{className:"col-xs-6"},{});
-	v_divWrapSubmitButton = ELEMENT_FACTORY.createElement("div",{className:"col-xs-6"},{});
+	v_divWrapUsername = ELEMENT_FACTORY.createElement("div",{className:"form-group has-feedback"});
+	v_divWrapPassword = ELEMENT_FACTORY.createElement("div",{className:"form-group has-feedback"});
+	v_divWrapActions = ELEMENT_FACTORY.createElement("div",{className:"row form-actions"});
+	v_divWrapRememberMe = ELEMENT_FACTORY.createElement("div",{className:"col-xs-6"});
+	v_divWrapSubmitButton = ELEMENT_FACTORY.createElement("div",{className:"col-xs-6"});
 
 	//others elements in panel body
-	v_labelUsername = ELEMENT_FACTORY.createElement("label",{textContent: "Username"},{});
-	v_iconUsername = ELEMENT_FACTORY.createElement("i",{className:"fa fa-user form-control-feedback"},{});
-	v_labelPassword = ELEMENT_FACTORY.createElement("label",{textContent: "Password"},{});
-	v_iconPassword = ELEMENT_FACTORY.createElement("i",{className:"fa fa-lock form-control-feedback"},{});
-	v_divRememberMe = ELEMENT_FACTORY.createElement("div",{className:"checkbox"},{});
-	v_labelRememberMe = ELEMENT_FACTORY.createElement("label",{},{});
-	v_textRememberMe = document.createTextNode("Keep Me Logged In"); //André Teixeira on 2015-10-08: The real functionality here is to keep the user logged in (we will change the variable names in the future)
+	v_labelUsername = ELEMENT_FACTORY.createElement("label",{textContent: "Usuário"});
+	v_iconUsername = ELEMENT_FACTORY.createElement("i", { className: "glyphicon glyphicon-user form-control-feedback" });
+	v_labelPassword = ELEMENT_FACTORY.createElement("label",{textContent: "Senha"});
+	v_iconPassword = ELEMENT_FACTORY.createElement("i", { className: "glyphicon glyphicon-lock form-control-feedback" });
+	v_divRememberMe = ELEMENT_FACTORY.createElement("div",{className:"checkbox"});
+	v_labelRememberMe = ELEMENT_FACTORY.createElement("label");
+	v_textRememberMe = document.createTextNode("Manter Logado"); //André Teixeira on 2015-10-08: The real functionality here is to keep the user logged in (we will change the variable names in the future)
 
 	//create all inputs and buttons
 	this.__submitButton= ELEMENT_FACTORY.createElement(
@@ -150,19 +149,19 @@ Login.prototype.__createLoginContent = function (){
 			__parentJS: this,
 			type: "submit",
 			className: "btn btn-warning pull-right",
-			textContent: "Sign in",
+			textContent: "Entrar",
 			onclick: this.onclickSubmitButton
 		},
 		{/*CSS*/}
 	);
-	this.__passwordInput = ELEMENT_FACTORY.createElement("input", {type: "password", className: "form-control", placeholder: "password"}, {});
-	this.__userNameInput = ELEMENT_FACTORY.createElement("input", {type: "text", className: "form-control", placeholder: "username"}, {});;;
-	this.__rememberMeInput = ELEMENT_FACTORY.createElement("input", {type: "checkbox", className: "styled"}, {});;
+	this.__passwordInput = ELEMENT_FACTORY.createElement("input", {type: "password", className: "form-control", placeholder: "senha"});
+	this.__userNameInput = ELEMENT_FACTORY.createElement("input", {type: "text", className: "form-control", placeholder: "nome de usuário"});
+	this.__rememberMeInput = ELEMENT_FACTORY.createElement("input", {type: "checkbox", className: "checkbox"});
 
 
 	//div that wrap all login content, so if we need to change 	__divWrapContent to login content again,
 	//we just set its innerHTML = '' and appendChild(this.__divLoginContent)
-	this.__divLoginContent = ELEMENT_FACTORY.createElement("div",{className: "panel panel-default"},{});
+	this.__divLoginContent = ELEMENT_FACTORY.createElement("div",{className: "panel panel-default"});
 
 	//setting hierarchy	
 	this.__divLoginContent.appendChild(v_divPanelHeading);
@@ -208,12 +207,12 @@ Login.prototype.__createMessageContent = function (){
 	 	},
  		{}
 	);
- var v_icon = ELEMENT_FACTORY.createElement("icon",{},{});
+ var v_icon = ELEMENT_FACTORY.createElement("icon");
  var v_textMessage = document.createTextNode("default message");
 
-	this.__divWrapMessage = ELEMENT_FACTORY.createElement("div",{},{});
+	this.__divWrapMessage = ELEMENT_FACTORY.createElement("div");
 
-	this.__divMessageContent = ELEMENT_FACTORY.createElement("div",{},{});
+	this.__divMessageContent = ELEMENT_FACTORY.createElement("div");
 
 	//save reference to icon object and textMessage
 	this.__divMessageContent.icon = v_icon;
@@ -228,11 +227,11 @@ Login.prototype.__createMessageContent = function (){
 
 Login.prototype.__createForgotPasswordContent = function (){
 
-	var v_anchorElement = ELEMENT_FACTORY.createElement("a",{title:"Forgot your password?", textContent: "Forgot my password"},{});
+	var v_anchorElement = ELEMENT_FACTORY.createElement("a",{title:"Esqueceu a senha?", textContent: "Esqueceu a senha?"});
 
 	//creating forgotPassword panel
 	//<a href="login-forgot.php" title="Forgot your password?" target="_self"> Forgot my password</a>
-	this.__divForgotPassword = ELEMENT_FACTORY.createElement("div",{ __parentJS: this, className:"panel-forgot", onclick: this.onclickForgotPassword},{});
+	this.__divForgotPassword = ELEMENT_FACTORY.createElement("div",{ __parentJS: this, className:"panel-forgot", onclick: this.onclickForgotPassword});
 	this.__divForgotPassword.appendChild(v_anchorElement);
 
 };
@@ -427,7 +426,7 @@ Login.prototype.isThereSomeUserLoggedRequest = function (){
  */
 Login.prototype.isThereSomeUserLoggedCallBack = function (p_data){
 	if (p_data.isThereSomeUserLogged){
-		window.open('default.aspx', '_self');	
+		window.open('painel.aspx', '_self');	
 	}
 };
 
@@ -442,8 +441,7 @@ Login.prototype.loginRequest = function (){
 	v_data.u = this.__userNameInput.value;
 	v_data.p = encriptPassword(v_data.u, this.__passwordInput.value);
 	v_data.rememberMe = this.__rememberMeInput.checked;
-
-
+	alert(v_data.p);
 	this.__ajaxhandler.doJsonAjaxRequest(v_url, v_data);
 
 };

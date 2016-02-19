@@ -68,25 +68,6 @@ Utilities.BrowserIf = function(p_valueIE,p_valueOther){
 
 };
 
-Utilities.GetFunctionByName = function(p_name){
-
-	var v_function = undefined;
-	switch(p_name)
-	{
-
-	case "CONFIG.PARAMETERS_MULTIPLE_CHECK":
-		v_function = new MultipleCheck();
-		break;
-	case "CONFIG.SHOW_PARAMETER_TABLE":
-		v_function = new ShowParameterTable();
-		break;
-
-	}
-
-	return v_function;
-
-};
-
 Utilities.RemoveLastChar = function (p_string, p_amount){
 
 	if(!p_amount){
@@ -180,30 +161,6 @@ Utilities.DateToString = function(p_date, p_showTime){
 	}
 	//-----------------------------------------------------------------
 	return v_dateString;
-};
-
-/**
- * @param {Array} p_selectedElement
- * @param {Array} p_allowedElements
- * @return {Boolean} Returns true if we have 1 or more intersections between the arrays
- */
-Utilities.ValidateSelectedElement = function(p_selectedElement,p_allowedElements)
-{
-	if(!p_selectedElement)
-	{
-		return false;
-	}
-	if(!p_allowedElements)
-	{
-		return false;
-	}
-
-	if(Utilities.ArrayIntersection(p_selectedElement,p_allowedElements,false).length > 0)
-	{
-		return true;
-	}
-
-	return false;
 };
 
 /** Converts numeric degrees to radians */
@@ -368,66 +325,6 @@ Utilities.buildStringUrlParameters = function (p_url, p_urlParameters){
 
 
 /**
- * There are some tables that are for the OSS level, they are available only for the NETWORK element
- * this method will return these tables given the selected element
- * 
- * @param p_element {ElementInformation}
- * @returns {String} The additional tables
- */
-Utilities.getAdditionalParameterTables = function (p_element) {
-	if (p_element == undefined) {
-		return "";
-	}
-
-	if (p_element.type == "RNC-R" && p_element.name == "NETWORK" && p_element.technology == "ericsson3g") {
-		//special case in Ericsson3G - if user selects NETWORK, adding following tables to list of available (these tables are OSS level - not available for RNC region)
-		return " a_alarmirp a_areas a_bulkcmirp a_externalgsmcell a_externalgsmplmn a_externalutrancell " +
-		"a_externalutranplmn a_irpagent a_locationarea a_managementnode a_notificationirp a_plmn a_routingarea " +
-		"a_servicearea a_site a_tnapplication a_virtualpath a_sgwmgmtmapping";
-	}
-
-	if (p_element.type == "BSC-R" && p_element.name == "NETWORK" && p_element.technology == "ericsson2g") {
-		//special case in Ericsson3G - if user selects NETWORK, adding following tables to list of available (these tables are OSS level - not available for RNC region)
-		return " a_fcell a_ucell";
-	}
-
-	return "";
-};
-
-Utilities.getAvailableTimeAgregations = function(p_tech){
-	var v_values = window["g_availableTimeAggregations_" + p_tech];
-	if(v_values == undefined){
-		v_values = [];
-	}
-	else{
-		v_values = v_values.split(",");
-	}
-	return v_values;
-};
-
-/**
- * This function returns all elements in the collection of the given technologies
- * 
- * @param p_elementInformationCollection {ElementInformationCollection}
- * @param p_technologies {[String]}
- * 
- * @returns {ElementInformationCollection}
- */
-Utilities.filterTechsElements = function (p_elementInformationCollection, p_technologies) {
-	var v_cellsSameTech = new Array();
-
-	for (var i = 0; i < p_elementInformationCollection.selectedElements.length; i++) {
-		if($.inArray(p_elementInformationCollection.selectedElements[i].technology, p_technologies) != -1){
-			v_cellsSameTech.push(p_elementInformationCollection.selectedElements[i]);
-		}
-	}
-
-	var v_elementInformationCollection = new ElementInformationCollection();
-	v_elementInformationCollection.populateSelectedElements(v_cellsSameTech);
-	return v_elementInformationCollection;
-};
-
-/**
  * Generating an iterating ID
  * @param p_id {String} the prefix for the Id
  * @returns v_idGen {String}
@@ -441,161 +338,6 @@ Utilities.generateId = function(p_id){
 	g_iteratorId++;
 
 	return v_idGen;
-};
-Utilities.getPMTablesIds = function(){
-	var v_tableCodeArray = new Object();
-	//Populate it with Table Name and Table ID
-	v_tableCodeArray["NOKRWW_PS_R99HW_LCG_RAW"] = 'M5006';
-	v_tableCodeArray["NOKRWW_PS_WBTSMON_WBTS_RAW"] = 'M5008';
-	v_tableCodeArray["NOKRWW_PS_IPCAC_RWB1_RAW"] = 'M804';
-	v_tableCodeArray["NOKRWW_PS_M3UA_ASSIND_RAW"] = 'M661';
-	v_tableCodeArray["NOKRWW_PS_FIP_IPPM_RAW"] = 'M5117';
-	v_tableCodeArray["NOKRWW_PS_FPHB_PHBPM_RAW"] = 'M5118';
-	v_tableCodeArray["NOKRWW_PS_IPIP_IPIF_RAW"] = 'M565';
-	v_tableCodeArray["NOKRWW_PS_UDPIP_IPIF_RAW"] = 'M566';
-	v_tableCodeArray["NOKRWW_PS_IPQOS_PHB_RAW"] = 'M567';
-	v_tableCodeArray["NOKRWW_PS_RCOLPR_RBUL1_RAW"] = 'M1025';
-	v_tableCodeArray["NOKRWW_PS_RCOLPW_CHTYP1_RAW"] = 'M1024';
-	v_tableCodeArray["NOKRWW_PS_RCRLCR_RBUL1_RAW"] = 'M1027';
-	v_tableCodeArray["NOKRWW_PS_RCRLCW_CHTYP1_RAW"] = 'M1026';
-	v_tableCodeArray["NOKRWW_PS_TCPIP_UNITID_RAW"] = 'M563';
-	v_tableCodeArray["NOKRWW_PS_ETHPRF_ETHIF_RAW"] = 'M564';
-	v_tableCodeArray["NOKRWW_PS_AAL2UN_ALU1_RAW"] = 'M548';
-	v_tableCodeArray["NOKRWW_PS_AALCAC_ALU1_RAW"] = 'M550';
-	v_tableCodeArray["NOKRWW_PS_AALRR_ALU1_RAW"] = 'M800';
-	v_tableCodeArray["NOKRWW_PS_AALSCH_ALU1_RAW"] = 'M553';
-	v_tableCodeArray["NOKRWW_PS_ASHODSR_SCR1_RAW"] = 'M1028';
-	v_tableCodeArray["NOKRWW_PS_ATMIF_IF_RAW"] = 'M532';
-	v_tableCodeArray["NOKRWW_PS_ATMRL_ROUTE_RAW"] = 'M531';
-	v_tableCodeArray["NOKRWW_PS_ATMVCC_ALU1_RAW"] = 'M530';
-	v_tableCodeArray["NOKRWW_PS_ATMVP_VPI_RAW"] = 'M529';
-	v_tableCodeArray["NOKRWW_PS_AUTIFH2_DMNC3_RAW"] = 'M1014';
-	v_tableCodeArray["NOKRWW_PS_AUTIFHO_DMNC1_RAW"] = 'M1014';
-	v_tableCodeArray["NOKRWW_PS_AUTISH2_DMNC4_RAW"] = 'M1015';
-	v_tableCodeArray["NOKRWW_PS_AUTISHO_DMNC2_RAW"] = 'M1015';
-	v_tableCodeArray["NOKRWW_PS_AUTSH2_DMNC3_RAW"] = 'M1013';
-	v_tableCodeArray["NOKRWW_PS_CAPAUSE_RNC_RAW"] = 'M802';
-	v_tableCodeArray["NOKRWW_PS_CELLRES_MNC1_RAW"] = 'M1000';
-	v_tableCodeArray["NOKRWW_PS_CELLTP_MNC1_RAW"] = 'M1023';
-	v_tableCodeArray["NOKRWW_PS_CELTPW_MNC1_RAW"] = 'M5002';
-	v_tableCodeArray["NOKRWW_PS_DSPLD_UNITID_RAW"] = 'M617';
-	v_tableCodeArray["NOKRWW_PS_DSPRESU_DSPP_RAW"] = 'M615';
-	v_tableCodeArray["NOKRWW_PS_DSPSRV_SERVT_RAW"] = 'M609';
-	v_tableCodeArray["NOKRWW_PS_DSPST_UNITID_RAW"] = 'M612';
-	v_tableCodeArray["NOKRWW_PS_DSP_RNC_RAW"] = 'M613';
-	v_tableCodeArray["NOKRWW_PS_FATMVC_VCCT_RAW"] = 'M5106';
-	v_tableCodeArray["NOKRWW_PS_FATMVP_VPCT_RAW"] = 'M5107';
-	v_tableCodeArray["NOKRWW_PS_FATM_TCTT_RAW"] = 'M5105';
-	v_tableCodeArray["NOKRWW_PS_FETHL_ETHLK_RAW"] = 'M5110';
-	v_tableCodeArray["NOKRWW_PS_FPDH_PPTT_RAW"] = 'M5101';
-	v_tableCodeArray["NOKRWW_PS_FPSN_PWTIP_RAW"] = 'M5114';
-	v_tableCodeArray["NOKRWW_PS_FPWMP_PWMP_RAW"] = 'M5113';
-	v_tableCodeArray["NOKRWW_PS_FRPRW_LCG_RAW"] = 'M5003';
-	v_tableCodeArray["NOKRWW_PS_FSDH_SVTT_RAW"] = 'M5102';
-	v_tableCodeArray["NOKRWW_PS_HSDPAW_MNC1_RAW"] = 'M5000';
-	v_tableCodeArray["NOKRWW_PS_INTERSHO_MNC1_RAW"] = 'M1010';
-	v_tableCodeArray["NOKRWW_PS_INTSYSHO_MNC1_RAW"] = 'M1008';
-	v_tableCodeArray["NOKRWW_PS_IPROUT_RWB1_RAW"] = 'M568';
-	v_tableCodeArray["NOKRWW_PS_IUPS_UNITID_RAW"] = 'M801';
-	v_tableCodeArray["NOKRWW_PS_L3IUB_MNC1_RAW"] = 'M1005';
-	v_tableCodeArray["NOKRWW_PS_L3IUR2_MNC11_RAW"] = 'M1004';
-	v_tableCodeArray["NOKRWW_PS_L3IU_MNC6_RAW"] = 'M1003';
-	v_tableCodeArray["NOKRWW_PS_LCS_MNC6_RAW"] = 'M1011';
-	v_tableCodeArray["NOKRWW_PS_PKTCALL_MNC1_RAW"] = 'M1022';
-	v_tableCodeArray["NOKRWW_PS_RCOLPC_SDUBER1_RAW"] = 'M1016';
-	v_tableCodeArray["NOKRWW_PS_RCPMRLC_SDUBER1_RAW"] = 'M1017';
-	v_tableCodeArray["NOKRWW_PS_RCPMUEQ_SDUBER1_RAW"] = 'M1018';
-	v_tableCodeArray["NOKRWW_PS_RELOC2_MNC12_RAW"] = 'M1009';
-	v_tableCodeArray["NOKRWW_PS_RRC_MNC1_RAW"] = 'M1006';
-	v_tableCodeArray["NOKRWW_PS_SERVLEV_MNC1_RAW"] = 'M1001';
-	v_tableCodeArray["NOKRWW_PS_SIGLDW_HWUNIT_RAW"] = 'M5004';
-	v_tableCodeArray["NOKRWW_PS_SOFTHO_MNC1_RAW"] = 'M1007';
-	v_tableCodeArray["NOKRWW_PS_TRAFFIC_MNC1_RAW"] = 'M1002';
-	v_tableCodeArray["NOKRWW_PS_ULOAD_UNITID_RAW"] = 'M592';
-	v_tableCodeArray["NOKRWW_PS_WBTSHW_LCG_RAW"] = 'M5001';
-	v_tableCodeArray["NOKRWW_PS_WBTSRES_WBTS_RAW"] = 'M1031';
-	v_tableCodeArray["NOKRWW_PS_AUTOSHO_DMNC1_RAW"] = 'M1013';
-	v_tableCodeArray["NOKRWW_PS_L3IUR_MNC7_RAW"] = 'M1004';
-	v_tableCodeArray["NOKRWW_PS_RELOC_MNC8_RAW"] = 'M1009';
-	v_tableCodeArray["NOKRWW_PS_CPICHQ_MNC1_RAW"] = 'M1033';
-	v_tableCodeArray["NOKRWW_PS_FTOP_TOPIK_RAW"] = 'M5116';
-	v_tableCodeArray["P_NBSC_ABIS_D_CHANNEL"] = 'M226';
-	v_tableCodeArray["P_NBSC_AMR_PPC"] = 'M111';
-	v_tableCodeArray["P_NBSC_AMR_RX_QUAL"] = 'M107';
-	v_tableCodeArray["P_NBSC_CELL_RESELECTION"] = 'M095';
-	v_tableCodeArray["P_NBSC_CODING_SCHEME"] = 'M079';
-	v_tableCodeArray["P_NBSC_DYNAMIC_ABIS"] = 'M076';
-	v_tableCodeArray["P_NBSC_EQOS"] = 'M097';
-	v_tableCodeArray["P_NBSC_FER"] = 'M077';
-	v_tableCodeArray["P_NBSC_FRAME_RELAY"] = 'M074';
-	v_tableCodeArray["P_NBSC_GB_OVER_IP"] = 'M098';
-	v_tableCodeArray["P_NBSC_HO"] = 'M004';
-	v_tableCodeArray["P_NBSC_HO_ADJ"] = 'M015';
-	v_tableCodeArray["P_NBSC_LOAD"] = 'M006';
-	v_tableCodeArray["P_NBSC_MS_CAPABILITY"] = 'M071';
-	v_tableCodeArray["P_NBSC_PACKET_CONTROL_UNIT"] = 'M072';
-	v_tableCodeArray["P_NBSC_PCU_UTILIZATION"] = 'M110';
-	v_tableCodeArray["P_NBSC_POWER"] = 'M005';
-	v_tableCodeArray["P_NBSC_PS_DTM"] = 'M105';
-	v_tableCodeArray["P_NBSC_QOS"] = 'M090';
-	v_tableCodeArray["P_NBSC_RES_ACCESS"] = 'M003';
-	v_tableCodeArray["P_NBSC_RLC_BLOCKS_PER_TRX"] = 'M073';
-	v_tableCodeArray["P_NBSC_UNDEF_ADJ_CELL"] = 'M013';
-	v_tableCodeArray["P_NBSC_RES_AVAIL"] = 'M002';
-	v_tableCodeArray["P_NBSC_RX_QUAL"] = 'M014';
-	v_tableCodeArray["P_NBSC_SERVICE"] = 'M057';
-	v_tableCodeArray["P_NBSC_SOFT_CHANNEL_CAP"] = 'M109';
-	v_tableCodeArray["P_NBSC_TIMING_ADVANCE"] = 'M055';
-	v_tableCodeArray["P_NBSC_TRAFFIC"] = 'M001';
-	v_tableCodeArray["P_NBSC_UTRAN_HO_ADJ_CELL"] = 'M093';
-	v_tableCodeArray["P_SGSN_MOBILITY_MANAGEMENT"] = 'SGSN001';
-	v_tableCodeArray["P_SGSN_SESSION_MANAGEMENT"] = 'SGSN002';
-	v_tableCodeArray["P_NBSC_AMR_RX_QUAL"] = 'M107';
-	v_tableCodeArray["P_NBSC_DMR"] = 'M062';
-	v_tableCodeArray["P_NBSC_RX_STATISTICS"] = 'M053';
-	v_tableCodeArray["P_NBSC_TRU_BIE"] = 'M064';
-	v_tableCodeArray["P_SGSN_IU_DATA"] = 'SGSN019';
-	v_tableCodeArray["P_SGSN_PAPU_USER"] = 'SGSN021';
-	v_tableCodeArray["P_NBSC_PA_BTS"] = 'M123';
-	v_tableCodeArray["P_NBSC_PA_TRAFFIC"] = 'M124';
-	v_tableCodeArray["P_NBSC_ETP_ETH_BSC"] = 'M128';
-	v_tableCodeArray["T1526726683"] = "RRC_SETUPFAIL_CELL";
-	v_tableCodeArray["T1526726684"] = "RRC_REEST_CELL";
-	v_tableCodeArray["T1526726685"] = "RRC_REESTFAIL_CELL";
-	v_tableCodeArray["T1526726659"] = "E_RAB_EST_CELL";
-	v_tableCodeArray["T1526726660"] = "E_RAB_REL_CELL";
-	v_tableCodeArray["T1526726661"] = "E_RAB_ESTFAIL_CELL";
-	v_tableCodeArray["T1526726687"] = "E_RAB_MODIFY_CELL";
-	v_tableCodeArray["T1526726662"] = "ALGO_CELL";
-	v_tableCodeArray["T1526726664"] = "TRAFFIC_THRUPUT_CELL";
-	v_tableCodeArray["T1526726666"] = "PAGING_CELL";
-	v_tableCodeArray["T1526726693"] = "SECURMODE_CELL";
-	v_tableCodeArray["T1526726694"] = "RA_CELL";
-	v_tableCodeArray["T1526726698"] = "CHMEAS_PWR_CELL";
-	v_tableCodeArray["T1526726699"] = "CHMEAS_MIMO_CELL";
-	v_tableCodeArray["T1526726700"] = "CHMEAS_CQI_CELL";
-	v_tableCodeArray["T1526726701"] = "CHMEAS_MCS_CELL";
-	v_tableCodeArray["T1526726702"] = "CHMEAS_PRB_CELL";
-	v_tableCodeArray["T1526726704"] = "TRAFFIC_MAC_CELL";
-	v_tableCodeArray["T1526726705"] = "TRAFFIC_USER_CELL";
-	v_tableCodeArray["T1526726707"] = "HO_IRAT_IN_CELL";
-	v_tableCodeArray["T1526726708"] = "HO_ERAN_OUT_CELL";
-	v_tableCodeArray["T1526726709"] = "HO_ERAN_IN_CELL";
-	v_tableCodeArray["T1526726710"] = "HO_ERAN_X2OUT_CELL";
-	v_tableCodeArray["T1526726712"] = "HO_DRX_OUT_CELL";
-	v_tableCodeArray["T1526726722"] = "TRAFFIC_PACKET_CELL";
-	v_tableCodeArray["T1526726728"] = "EMC_CELL";
-	v_tableCodeArray["T1526726729"] = "CELL";
-	v_tableCodeArray["T1526726695"] = "SIG_S1";
-	v_tableCodeArray["T1526726713"] = "HO_NCELL_CELL";
-	v_tableCodeArray["T1526726672"] = "BOARD_CPU";
-	v_tableCodeArray["T1526726680"] = "RRU_DEVICE";
-	v_tableCodeArray["T1526726715"] = "BBU_DEVICE";
-	v_tableCodeArray["T1526726725"] = "ENODEB_DEVICE";
-	v_tableCodeArray["T1526726733"] = "TRAFFIC_USER_ENODEB";
-	v_tableCodeArray["T1526726714"] = "PMU_DEVICE";	
-
-	return v_tableCodeArray;
 };
 
 Utilities.isEmptyObject = function(p_obj){
@@ -760,11 +502,3 @@ function encriptPassword(p_key, p_toEncript) {
 
 	return v_toReturn;
 }
-
-/**
- * Used in functions used both for exceptions and parameters or planned network.
- * @type {Object}
- *
- * Created by Mathias Kriebel on 2014-11-19
- */
-DataBaseType = { PARAMETER: "param", EXCEPTIONS: "exceptions", PLANNED: "planned"};
